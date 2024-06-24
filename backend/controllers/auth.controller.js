@@ -25,7 +25,7 @@ export const signup = async (req, res) => {
 		const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
 		const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
 
-		const newUser = new User({
+		const newUser = await User.create({
 			fullName,
 			username,
 			password: hashedPassword,
@@ -33,12 +33,12 @@ export const signup = async (req, res) => {
 			profilePic: gender === "male" ? boyProfilePic : girlProfilePic,
 		});
 
-		const saved_user = await User.create(newUser);
-		if(!saved_user) return res.status(500).json({success : false});
+		
+		if(!newUser) return res.status(500).json({success : false});
 
 		//prevent access attacks
-		generateTokenAndSetCookie(saved_user._id, res);
-		res.status(201).json(saved_user);
+		generateTokenAndSetCookie(newUser._id, res);
+		res.status(201).json(newUser);
 	} catch (error) {
 		console.log("Error in signup controller", error.message);
 		res.status(500).json({ error: "Internal Server Error" });
